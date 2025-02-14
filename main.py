@@ -1,6 +1,7 @@
 # Modules
-from mfrc522 import MFRC522 as mfr
+
 import RPi.GPIO as GPIO
+import MFRC522
 
 #hi jonty :)
 
@@ -11,9 +12,6 @@ while status != reader.MI_OK:
 	(status, TagType) = reader.Request(reader.PICC_REQIDL)
 	if status == reader.MI_OK:
 		print("Connection Success!")
-
-import RPi.GPIO as GPIO
-import MFRC522
 
 #Create an instance of the MFRC522 reader 
 MIFAREReader = MFRC522.MFRC522()
