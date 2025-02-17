@@ -1,31 +1,43 @@
-# Modules
 import RPi.GPIO as GPIO
-import mfrc522
+from mfrc522 import SimpleMFRC522
 
-#hi jonty :)
+reader = SimpleMFRC522()
 
-# Main Logic
-
-status =  None
-#Create an instance of the MFRC522 reader 
-MIFAREReader = mfrc522.MFRC522()
-
-#Welcome Message
-print("Looking for cards")
-
-#Loop for card reading 
-while True:
-    #Scan for cards
-    (status, TagType) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
+def read_from_rfid():
+    try:
+        print("Place your tag to read...")
+        id, text = reader.read()
+        
+        name = None
+        student_id = None
+        date = None
+        
+        # data is stored in one string
+        # parses data from string
+        if "|" in text:
+            parts = text.strip().split("|")
+            for part in parts:
+                if part.startswith("Name:"):
+                    name = part.replace("Name:", "").strip()
+                elif part.startswith("ID:"):
+                    student_id = part.replace("ID:", "").strip()
+                elif part.startswith("Date:"):
+                    date = part.replace("Date:", "").strip()
+        
+        # print(f"Card ID: {id}")
+        # print(f"Name: {name}")
+        # print(f"Student ID: {student_id}")
+        # print(f"Date: {date}")
+        
+        #returns variables for db
+        return id, name, student_id, date
     
-    #If a card is found
-    if status == MIFAREReader.MI_OK:
-        print("Card Detected")
-        
-        #Get UID of the card
-        (status, uid) = MIFAREReader.MFRC522_Anticoll()
-        
-        #if UID is recognised, continue
-        if status == MIFAREReader.MI_OK:
-            #Print UID
-            print("Card read UID: %s, %s, %s, %s" % (uid[0], uid[1], uid[2], uid[3]))
+    except Exception as e:
+        print(f"Error: {e}")
+        return None, None, None, None
+    finally:
+        GPIO.cleanup()
+
+if __name__ == "__main__":
+    card_id, name, student_id, date = read_from_rfid()
+    print(card_id, name, student_id, date)
