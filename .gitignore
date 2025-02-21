@@ -1,4 +1,4 @@
-
+.env
 
 
 
@@ -10,3 +10,5 @@
 
 
 dist/# Ignore build directory*.log# Ignore log filesnode_modules/# Ignore node_modules directory.env# Ignore environment variables file
+.env
+.env
