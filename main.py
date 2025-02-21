@@ -10,10 +10,16 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 import datetime
+import os
 
+
+
+cred_path = os.getenv("FIREBASE_CREDENTIALS")
+if cred_path is None:
+    raise ValueError("FIREBASE_CREDENTIALS environment variable is not set!")
 
 # Initialize Firebase Admin SDK
-cred = credentials.Certificate(r"/home/dev/scanner/keys/attendance-159d3-firebase-adminsdk-fbsvc-084da24e95.json")
+cred = credentials.Certificate(cred_path)
 firebase_admin.initialize_app(cred)
 
 # Get Firestore client
