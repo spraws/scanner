@@ -1,5 +1,27 @@
 import RPi.GPIO as GPIO
 from mfrc522 import SimpleMFRC522
+from dotenv import load_dotenv
+import os
+import mysql.connector
+
+load_dotenv()
+
+#sql credentials
+db_host=os.getenv("SQL_SERVER")
+db_user=os.getenv("SQL_USER")
+db_passwd=os.getenv("SQL_PASSWORD")
+db_db=os.getenv("SQL_DATABASE")
+
+connect = mysql.connector.connect(
+    host=db_host,
+    user=db_user,
+    password=db_passwd,
+    database=db_db
+)
+
+#establish conn
+cursor = connect.cursor()
+
 
 reader = SimpleMFRC522()
 
@@ -40,4 +62,4 @@ def read_from_rfid():
 
 if __name__ == "__main__":
     card_id, name, student_id, date = read_from_rfid()
-    print(card_id, name, student_id, date)
+    
