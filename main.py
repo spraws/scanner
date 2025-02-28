@@ -2,25 +2,27 @@ import RPi.GPIO as GPIO
 from mfrc522 import SimpleMFRC522
 from dotenv import load_dotenv
 import os
-import mysql.connector
+from pocketbase import PocketBase  
+from pocketbase.client import FileUpload
+import datetime
 
-load_dotenv()
 
-#sql credentials
-db_host=os.getenv("SQL_SERVER")
-db_user=os.getenv("SQL_USER")
-db_passwd=os.getenv("SQL_PASSWORD")
-db_db=os.getenv("SQL_DATABASE")
 
-connect = mysql.connector.connect(
-    host=db_host,
-    user=db_user,
-    password=db_passwd,
-    database=db_db
-)
+PB_USERNAME=os.getenv('PB_USER')
+PB_PASSWORD=os.getenv('PB_PASS')
 
-#establish conn
-cursor = connect.cursor()
+client = PocketBase('http://192.168.8.243:8090')
+
+# authenticate as regular user
+user_data = client.collection("users").auth_with_password(
+    PB_USERNAME, PB_PASSWORD)
+# check if user token is valid
+user_data.is_valid
+
+admin_data = client.admins.auth_with_password(PB_USERNAME, PB_PASSWORD)
+
+# check if admin token is valid
+admin_data.is_valid
 
 
 reader = SimpleMFRC522()
@@ -33,6 +35,8 @@ def read_from_rfid():
         name = None
         student_id = None
         date = None
+        scanTime = datetime.datetime.now()
+        scanTime_str = scanTime.strftime('%Y-%m-%d %H:%M:%S')
         
         # data is stored in one string
         # parses data from string
@@ -52,7 +56,7 @@ def read_from_rfid():
         # print(f"Date: {date}")
         
         #returns variables for db
-        return id, name, student_id, date
+        return id, name, student_id, date, scanTime_str
     
     except Exception as e:
         print(f"Error: {e}")
@@ -61,5 +65,23 @@ def read_from_rfid():
         GPIO.cleanup()
 
 if __name__ == "__main__":
-    card_id, name, student_id, date = read_from_rfid()
+    card_id, name, student_id, date, scanTime_str = read_from_rfid()
+        # Only stores if it reads data correctly
+    if card_id and name and student_id and scanTime_str:
+        data = {
+            'Name': name,
+            'student_id': student_id,
+            'card_id': card_id,
+            'scan_date': scanTime_str,
+            
+        }
+        
+    try:
+        client.collection('attendance').create(data)
+        print("Record Added")
+    except Exception as error:
+        print(f"Error adding record: {error}")
+    print(data)
+    
+    
     
