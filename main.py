@@ -7,7 +7,6 @@ from pocketbase.client import FileUpload
 import datetime
 
 
-
 PB_USERNAME=os.getenv('PB_USER')
 PB_PASSWORD=os.getenv('PB_PASS')
 
@@ -23,7 +22,6 @@ admin_data = client.admins.auth_with_password(PB_USERNAME, PB_PASSWORD)
 
 # check if admin token is valid
 admin_data.is_valid
-
 
 reader = SimpleMFRC522()
 
@@ -82,6 +80,3 @@ if __name__ == "__main__":
     except Exception as error:
         print(f"Error adding record: {error}")
     print(data)
-    
-    
-    
