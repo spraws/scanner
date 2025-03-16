@@ -1,20 +1,20 @@
 import React from 'react';
 import logo from '../../assets/images/uni-logo.png';
+import GlassyCardScanButton from '../scan-button';
 
 const Greeter = () => {
     return (
-        <div>
-            <div className="container">
-                <div className="row">
-                    <div className="col-md-12">
-                        <div className="text-center">
-                            <img src={logo} alt="uni logo" className="img-fluid" style={{width: '300px'}}/>
-                            <h1 className="display-4 mt-3">Welcome to the University</h1>
-                            <p className="lead">Press The Button to Scan your card </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div className="flex flex-col items-center justify-center min-h-screen text-center font-poppins">
+            {/* Logo at the top */}
+            <img src={logo} alt="University Logo" className="w-72 mb-6 drop-shadow-2xl" />
+            
+            {/* Text content */}
+            <h1 className="text-4xl font-semibold">Welcome to Worcester</h1>
+            <p className="text-lg mt-2">Press the button below to scan your card</p>
+            
+            {/* Scan button */}
+            <GlassyCardScanButton className="mt-8" onClick={() => alert('Scan button clicked!')} />
+
         </div>
     );
 };
