@@ -47,7 +47,7 @@ func LaunchChromiumKioskMode() {
 func main() {
 	// Create an instance of the app structure
 	app := NewApp()
-	LaunchChromiumKioskMode()
+	// LaunchChromiumKioskMode()
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title:     "scanner-screen",
@@ -62,8 +62,8 @@ func main() {
 		Bind: []interface{}{
 			app,
 		},
-		Fullscreen:    true,
-		DisableResize: true,
+		WindowStartState: options.Fullscreen,
+		DisableResize:    true,
 	})
 
 	if err != nil {
