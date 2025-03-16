@@ -9,5 +9,9 @@
   "author": {
     "name": "jonty",
     "email": "sprj1_23@uni.worc.ac.uk"
+  },
+  "backend": {
+    "directory": "./backend",
+    "command": "go run main.go"
   }
 }
