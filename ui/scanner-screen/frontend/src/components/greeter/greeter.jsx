@@ -9,11 +9,11 @@ const Greeter = () => {
             <img src={logo} alt="University Logo" className="w-72 mb-6 drop-shadow-2xl" />
             
             {/* Text content */}
-            <h1 className="text-4xl font-semibold">Welcome to Worcester</h1>
-            <p className="text-lg mt-2">Press the button below to scan your card</p>
+            <h1 className="text-6xl font-semibold">Welcome to Worcester</h1>
+            <p className="text-3xl mt-2">Press the button below to scan your card</p>
             
             {/* Scan button */}
-            <GlassyCardScanButton className="mt-8" onClick={() => alert('Scan button clicked!')} />
+            <GlassyCardScanButton className="mt-8" />
 
         </div>
     );
