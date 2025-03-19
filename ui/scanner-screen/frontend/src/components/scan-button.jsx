@@ -1,42 +1,49 @@
-"use client"
-
+import { useState } from 'react';
 import { Scan } from 'lucide-react';
-import { invoke } from '@wails/runtime'; // Import the Wails runtime invoke method
+import { RunRFIDScan } from '../../wailsjs/go/main/App';
 
 export default function GlassyCardScanButton({ className = "", onClick }) {
-  // Combine default classes with any custom classes
+  const [isScanning, setIsScanning] = useState(false);
+
   const buttonClasses = `
-    relative group overflow-hidden rounded-md px-4 py-2
+    relative group overflow-hidden rounded-md px-6 py-3 text-2xl
     bg-white/10 backdrop-blur-md border border-white/20
     hover:bg-white/20 hover:border-white/30 active:scale-[0.98]
     transition-all duration-300 text-white shadow-lg
     ${className}
-  `.trim()
+  `.trim();
 
-  // Function that will be triggered when the button is clicked
-  const handleScan = async () => {
+  async function scan() {
+    setIsScanning(true);
     try {
-      // Call the Go function that runs the Python script
-      const response = await invoke('RunRFIDScan'); // Calls the Go function exposed by Wails
-      alert(`RFID Scan Result:\n${response}`); // Display the result from the script
+      const result = await RunRFIDScan();
+      if (!result) {
+        throw new Error('No scan result received');
+      }
+      console.log('Scan result:', result);
+
+      try {
+        const data = JSON.parse(result);
+        alert(`Scan successful!\nName: ${data.Name}\nStudent ID: ${data.student_id}`);
+      } catch {
+        alert(`Scan successful: ${result}`);
+      }
     } catch (error) {
-      alert(`Error: ${error}`); // Handle any error that occurs during the scan
+      console.error('Scan error:', error);
+      alert(`Scan failed: ${error.message}`);
+    } finally {
+      setIsScanning(false);
     }
   }
 
   return (
-    <button onClick={handleScan} className={buttonClasses}>
-      {/* Gradient overlay */}
+    <button onClick={scan} className={buttonClasses} disabled={isScanning}>
       <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-50 group-hover:opacity-70 transition-opacity" />
-
-      {/* Shine effect */}
       <div className="absolute -inset-full h-full w-1/2 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white/20 opacity-40 group-hover:animate-shine" />
-
-      {/* Button content */}
-      <span className="relative flex items-center justify-center gap-2">
-        <Scan className="h-5 w-5" />
-        <span>Scan Card</span>
+      <span className="relative flex items-center justify-center gap-3">
+        <Scan className="h-12 w-12" />
+        <span>{isScanning ? 'Scanning...' : 'Scan Card'}</span>
       </span>
     </button>
-  )
+  );
 }

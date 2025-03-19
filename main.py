@@ -6,11 +6,13 @@ from pocketbase import PocketBase
 from pocketbase.client import FileUpload
 import datetime
 
+load_dotenv()
 
 PB_USERNAME=os.getenv('PB_USER')
 PB_PASSWORD=os.getenv('PB_PASS')
+PB_ADDR=os.getenv('PB_ADDR')
 
-client = PocketBase('http://192.168.8.243:8090')
+client = PocketBase(PB_ADDR)
 
 # authenticate as regular user
 user_data = client.collection("users").auth_with_password(

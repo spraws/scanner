@@ -2,9 +2,10 @@ package main
 
 import (
 	"embed"
-	"log"
+	"fmt"
+	"os"
 	"os/exec"
-	"runtime"
+	"strings"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -15,33 +16,34 @@ import (
 var assets embed.FS
 
 func (a *App) RunRFIDScan() (string, error) {
-	cmd := exec.Command("python3", "/home/dev/scanner/ui/scanner-screen/backend/rfid_reader.py")
+	// Use Python from virtual environment
+	cmd := exec.Command("/home/dev/scanner/.venv/bin/python3", "/home/dev/scanner/main.py")
+
+	// Set the working directory
+	cmd.Dir = "/home/dev/scanner"
+
+	// Set environment variables including virtual env activation
+	cmd.Env = append(os.Environ(),
+		"VIRTUAL_ENV=/home/dev/scanner/.venv",
+		"PYTHONPATH=/home/dev/scanner/.venv/lib/python3.9/site-packages",
+		"PATH=/home/dev/scanner/.venv/bin:"+os.Getenv("PATH"),
+	)
+
 	output, err := cmd.CombinedOutput()
-	return string(output), err
-}
+	outputStr := string(output)
 
-func LaunchChromiumKioskMode() {
-	var cmd *exec.Cmd
-	url := "http://localhost:8080" // Replace with the URL or your Wails app's local URL
+	// Log the output for debugging
+	fmt.Printf("Python output: %s\n", outputStr)
 
-	// Adjust the command depending on the OS
-	switch runtime.GOOS {
-	case "linux":
-		cmd = exec.Command("chromium", "--kiosk", "--no-first-run", "--disable-translate", url)
-	case "windows":
-		cmd = exec.Command("C:\\Program Files (x86)\\Chromium\\chromium.exe", "--kiosk", "--no-first-run", "--disable-translate", url)
-	case "darwin": // macOS
-		cmd = exec.Command("/Applications/Chromium.app/Contents/MacOS/Chromium", "--kiosk", "--no-first-run", "--disable-translate", url)
-	default:
-		log.Fatalf("Unsupported OS: %s", runtime.GOOS)
-	}
-
-	// Start Chromium in kiosk mode
-	err := cmd.Start()
 	if err != nil {
-		log.Fatalf("Failed to start Chromium: %v", err)
+		return "", fmt.Errorf("scanner error (%v): %s", err, outputStr)
 	}
-	log.Println("Chromium launched in kiosk mode")
+
+	if outputStr == "" {
+		return "", fmt.Errorf("no output from scanner (check if card is present)")
+	}
+
+	return strings.TrimSpace(outputStr), nil
 }
 
 func main() {
