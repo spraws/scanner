@@ -40,6 +40,7 @@ def read_from_rfid():
         
         # data is stored in one string
         # parses data from string
+        #AI GEN----------------------------------------------------------
         if "|" in text:
             parts = text.strip().split("|")
             for part in parts:
@@ -49,6 +50,7 @@ def read_from_rfid():
                     student_id = part.replace("ID:", "").strip()
                 elif part.startswith("Date:"):
                     date = part.replace("Date:", "").strip()
+        #AI GEN END------------------------------------------------------
         
         # print(f"Card ID: {id}")
         # print(f"Name: {name}")
