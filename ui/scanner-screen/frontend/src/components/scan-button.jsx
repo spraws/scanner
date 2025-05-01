@@ -18,6 +18,7 @@ export default function GlassyCardScanButton({ className = "" }) {
   `.trim();
 
   useEffect(() => {
+    //AI GEN-----------------------------------------------------------------
     let timer;
     let progressTimer;
     
@@ -40,8 +41,9 @@ export default function GlassyCardScanButton({ className = "" }) {
       clearInterval(progressTimer);
     };
   }, [showNotification]);
+    //AI GEN END-----------------------------------------------------------------
 
-// ...existing code...
+
 const scan = async () => {
   setIsScanning(true);
   try {
@@ -50,7 +52,7 @@ const scan = async () => {
 
     console.log('Scan result:', result);
 
-    // Extract the Python dictionary part
+    // AI GEN---------------------------------------------------------------------
     const dictMatch = result.match(/{.*}/s);
     if (!dictMatch) throw new Error('Invalid scan result format');
     
@@ -85,7 +87,7 @@ const scan = async () => {
     setIsScanning(false);
   }
 };
-// ...existing code...
+// AI GEN END---------------------------------------
 
   return (
     <div className="relative">
